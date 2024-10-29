@@ -32,6 +32,11 @@ test('bad logout', async () => {
     expect(logoutRes.status).toBe(401);
 })
 
+test('update user', async () => {
+    testUser.email = Math.random().toString(36).substring(2, 12) + '@test.com';
+    const updateUserRes = await request(app).put('/api/auth')//todo finish here
+})
+
 function expectValidJwt(potentialJwt) {
   expect(potentialJwt).toMatch(/^[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*$/);
 }
