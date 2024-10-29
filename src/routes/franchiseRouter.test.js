@@ -52,10 +52,6 @@ test('Delete Store', async() => {
     const deleteStoreRes = await request(app).delete('/api/franchise/' + createFranchiseRes.body.id + '/store/' + createStoreRes.body.id).set('Authorization', 'Bearer ' + testUserAuthToken);
     expect(deleteStoreRes.status).toBe(200);
 });
-
-function expectValidJwt(potentialJwt) {
-    expect(potentialJwt).toMatch(/^[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*$/);
-}
   
 function randomName() {
     return Math.random().toString(36).substring(2, 12);

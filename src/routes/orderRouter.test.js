@@ -1,11 +1,12 @@
 const request = require('supertest');
 const app = require('../service');
 
+let testUserAuthToken, testUser;
+
 beforeAll(async () => {
     testUser = await createAdminUser();
     const loginRes = await request(app).put('/api/auth').send(testUser);
     testUserAuthToken = loginRes.body.token;
-    testUserID = loginRes.body.user.id;
 });
   
 afterAll(async () => {
@@ -28,11 +29,6 @@ test('Get Orders', async() => {
     const getOrdersRes = await request(app).get('/api/order').set('Authorization', 'Bearer ' + testUserAuthToken);
     expect(getOrdersRes.status).toBe(200);
 })
-
-
-function expectValidJwt(potentialJwt) {
-    expect(potentialJwt).toMatch(/^[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*$/);
-  }
   
 function randomName() {
     return Math.random().toString(36).substring(2, 12);
