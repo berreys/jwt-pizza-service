@@ -37,6 +37,13 @@ test('Delete Franchise', async() => {
     expect(deleteFranchiseRes.status).toBe(200);
 });
 
+test('Create Store', async() => {
+    const franchiseName = randomName();
+    const createFranchiseRes = await request(app).post('/api/franchise').set('Authorization', 'Bearer ' + testUserAuthToken).send({name: franchiseName, admins: [{email: testUser.email}]});
+    const createStoreRes = await request(app).post('/api/franchise/' + createFranchiseRes.body.id + '/store').set('Authorization', 'Bearer ' + testUserAuthToken).send({name: randomName()});
+    expect(createStoreRes.status).toBe(200);
+});
+
 function expectValidJwt(potentialJwt) {
     expect(potentialJwt).toMatch(/^[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*$/);
   }
