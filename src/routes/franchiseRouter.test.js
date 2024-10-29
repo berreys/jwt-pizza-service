@@ -1,7 +1,7 @@
 const request = require('supertest');
 const app = require('../service');
 
-let testUserAuthToken, testUser, testUserID, admin;
+let testUserAuthToken, testUser, testUserID;
 
 beforeAll(async () => {
   testUser = await createAdminUser();
@@ -44,21 +44,30 @@ test('Create Store', async() => {
     expect(createStoreRes.status).toBe(200);
 });
 
+test('Delete Store', async() => {
+    const franchiseName = randomName();
+    const createFranchiseRes = await request(app).post('/api/franchise').set('Authorization', 'Bearer ' + testUserAuthToken).send({name: franchiseName, admins: [{email: testUser.email}]});
+    const storeName = randomName();
+    const createStoreRes = await request(app).post('/api/franchise/' + createFranchiseRes.body.id + '/store').set('Authorization', 'Bearer ' + testUserAuthToken).send({name: storeName});
+    const deleteStoreRes = await request(app).delete('/api/franchise/' + createFranchiseRes.body.id + '/store/' + createStoreRes.body.id).set('Authorization', 'Bearer ' + testUserAuthToken);
+    expect(deleteStoreRes.status).toBe(200);
+});
+
 function expectValidJwt(potentialJwt) {
     expect(potentialJwt).toMatch(/^[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*$/);
-  }
+}
   
-  function randomName() {
-      return Math.random().toString(36).substring(2, 12);
-  }
-  
-  const { Role, DB } = require('../database/database.js');
-  
-  async function createAdminUser() {
+function randomName() {
+    return Math.random().toString(36).substring(2, 12);
+}
+
+const { Role, DB } = require('../database/database.js');
+
+async function createAdminUser() {
     let user = { password: 'toomanysecrets', roles: [{ role: Role.Admin }] };
     user.name = randomName();
     user.email = user.name + '@admin.com';
   
     user = await DB.addUser(user);
     return { ...user, password: 'toomanysecrets' };
-  }
+}

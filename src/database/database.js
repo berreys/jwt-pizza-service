@@ -143,6 +143,7 @@ class DB {
   }
 
   async addDinerOrder(user, order) {
+    console.log("here!!!")
     const connection = await this.getConnection();
     try {
       const orderResult = await this.query(connection, `INSERT INTO dinerOrder (dinerId, franchiseId, storeId, date) VALUES (?, ?, ?, now())`, [user.id, order.franchiseId, order.storeId]);
