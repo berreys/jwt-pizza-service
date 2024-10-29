@@ -1,18 +1,24 @@
 const request = require('supertest');
 const app = require('../service');
 
-let testUserAuthToken, testUser, testUserID;
+let testUserAuthToken, testUser, testUserID, admin;
 
 beforeAll(async () => {
-  testUser = createAdminUser();
+  admin = await createAdminUser();
+  testUser = { name: admin.name, email: admin.email, password: admin.password };
   const loginRes = await request(app).put('/api/auth').send(testUser);
   testUserAuthToken = loginRes.body.token;
-  testUserID = loginRes.body.id;
+  testUserID = loginRes.body.user.id;
 });
 
 test('Get Franchises', async () => {
     const getFranchisesRes = await request(app).get('/api/franchise').send(testUser);
     expect(getFranchisesRes.status).toBe(200);
+});
+
+test('Get User Franchises', async() => {
+    const getUserFranchisesRes = await request(app).get('/api/franchise/' + testUserID).set('Authorization', 'Bearer ' + testUserAuthToken);
+    expect(getUserFranchisesRes.status).toBe(200);
 });
 
 
