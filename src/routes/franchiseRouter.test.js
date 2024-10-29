@@ -4,11 +4,15 @@ const app = require('../service');
 let testUserAuthToken, testUser, testUserID, admin;
 
 beforeAll(async () => {
-  admin = await createAdminUser();
-  testUser = { name: admin.name, email: admin.email, password: admin.password };
+  testUser = await createAdminUser();
   const loginRes = await request(app).put('/api/auth').send(testUser);
   testUserAuthToken = loginRes.body.token;
   testUserID = loginRes.body.user.id;
+});
+
+afterAll(async () => {
+    const connection = await DB.getConnection();
+    connection.end();
 });
 
 test('Get Franchises', async () => {
@@ -19,6 +23,12 @@ test('Get Franchises', async () => {
 test('Get User Franchises', async() => {
     const getUserFranchisesRes = await request(app).get('/api/franchise/' + testUserID).set('Authorization', 'Bearer ' + testUserAuthToken);
     expect(getUserFranchisesRes.status).toBe(200);
+});
+
+test('Create Franchise', async() => {
+    const name = randomName();
+    const createFranchiseRes = await request(app).post('/api/franchise').set('Authorization', 'Bearer ' + testUserAuthToken).send({name: name, admins: [{email: testUser.email}]});
+    expect(createFranchiseRes.status).toBe(200);
 });
 
 
