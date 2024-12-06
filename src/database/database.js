@@ -4,6 +4,7 @@ const config = require('../config.js');
 const { StatusCodeError } = require('../endpointHelper.js');
 const { Role } = require('../model/model.js');
 const dbModel = require('./dbModel.js');
+const logger = require('../logger.js');
 class DB {
   constructor() {
     this.initialized = this.initializeDatabase();
@@ -287,6 +288,8 @@ class DB {
 
   async query(connection, sql, params) {
     const [results] = await connection.execute(sql, params);
+    const log = {sql: sql, results: results}
+    logger.log('info', 'database', log);
     return results;
   }
 

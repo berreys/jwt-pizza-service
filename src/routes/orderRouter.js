@@ -3,6 +3,7 @@ const config = require('../config.js');
 const { Role, DB } = require('../database/database.js');
 const { authRouter } = require('./authRouter.js');
 const { asyncHandler, StatusCodeError } = require('../endpointHelper.js');
+const logger = require('../logger.js');
 
 const orderRouter = express.Router();
 
@@ -85,6 +86,8 @@ orderRouter.post(
       body: JSON.stringify({ diner: { id: req.user.id, name: req.user.name, email: req.user.email }, order }),
     });
     const j = await r.json();
+    sendFactoryLog()
+    
     if (r.ok) {
       res.send({ order, jwt: j.jwt, reportUrl: j.reportUrl });
     } else {
@@ -92,5 +95,14 @@ orderRouter.post(
     }
   })
 );
+
+async function sendFactoryLog(response, request, order, jwt){
+  logger.log(logger.statusToLogLevel(response.status), 'factory', { authorized: 'true',
+    path: `${config.factory.url}/api/order`,
+    method: 'POST',
+    statusCode: response.status,
+    reqBody: JSON.stringify({ diner: { id: request.user.id, name: request.user.name, email: request.user.email }, order }),
+    resBody: JSON.stringify({ order, jwt: jwt.jwt, reportUrl: jwt.reportUrl }),});
+}
 
 module.exports = orderRouter;
