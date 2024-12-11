@@ -44,6 +44,8 @@ Once everything is copied, we run an ```npm ci``` which is like npm install but 
 
 ```EXPOSE 80```
 
-This line tells docker to allow outside requests on port 80. This is known as exposing a port, thus the keyword ```EXPOSE```. 
+This line tells docker to allow outside requests on port 80. This is known as exposing a port, thus the keyword ```EXPOSE```. It will route traffic and requests to our app which is running and also expecting traffic from port 80.
 
-CMD ["node", "index.js", "80"]
+```CMD ["node", "index.js", "80"]```
+
+This is essentially starting our app. The array is parameters that get run on a command line basically. It is starting our server on port 80 (as I said in the previous step).
