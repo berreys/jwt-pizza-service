@@ -26,14 +26,24 @@ Many things can be included in a dockerfile like variables, lines that expose po
 
 This line is a variable that is saying what version of node we want to use...pretty self explanatory.
 
-FROM node:${NODE_VERSION}-alpine
+```FROM node:${NODE_VERSION}-alpine```
 
-WORKDIR /usr/src/app
+This line tells docker what base container to use. Docker has tons of different options for bases we can use to build our app on. Since we are writing a node app, this is telling docker to hook us up with a container with that ready to go.
 
-COPY . .
+```WORKDIR /usr/src/app```
 
-RUN npm ci
+This line navigates us to the /usr/src/app directory IN THE DOCKER container. It is kind of like ```cd /usr/src/app``` inside of the machine we got from the previous line.
 
-EXPOSE 80
+```COPY . .```
+
+This line copies everything from our current directory ON OUR MACHINE to the DOCKER CONTAINER at the previously defined directory.
+
+```RUN npm ci```
+
+Once everything is copied, we run an ```npm ci``` which is like npm install but it first clears anything that is already in the node_modules folder. This is run on the docker container where we just copied everything over.
+
+```EXPOSE 80```
+
+This line tells docker to allow outside requests on port 80. This is known as exposing a port, thus the keyword ```EXPOSE```. 
 
 CMD ["node", "index.js", "80"]
